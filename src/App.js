@@ -71,9 +71,15 @@ const App = () => {
     <PetStoreNav />
     <BrowserRouter>
       <Switch>
-        <Route path="/" component={Catalog} />
-        <Route path="/mycart" component={MyCart} />
-        <Route path="/admin" component={Admin} />
+        <Route exact path="/">
+          <Catalog />
+        </Route>
+        <Route path="/mycart">
+          <MyCart />
+        </Route>
+        <Route path="/admin">
+          <Admin />
+        </Route>
       </Switch>
     </BrowserRouter>
     </>
