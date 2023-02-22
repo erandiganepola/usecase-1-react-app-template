@@ -16,15 +16,12 @@ import Admin from './components/Admin/Admin.js';
 const RightLoginSignupMenu = () => {
   const history = useHistory();
 
-  const { state, getDecodedIDToken, signIn, signOut } = useAuthContext();
+  const { state, signIn, signOut } = useAuthContext();
   useEffect(() => {
     if (state.isAuthenticated) {
-      getDecodedIDToken().then((response) => {
-        console.log("Decoded ID Token: ", response);
-      });
-
+      console.log("Allowed scopes: ", state.allowedScopes);
       // if allowedScopes has admin scope, navigate to /admin
-      if (state.allowedScopes.includes("openid")) {
+      if (state.allowedScopes.includes("urn:erandisaorg:getproductdetails:list")) {
         history.push("/admin");
       }
     }

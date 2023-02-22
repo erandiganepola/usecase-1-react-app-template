@@ -13,9 +13,9 @@ root.render(
       config={{
         signInRedirectURL: "http://localhost:3000",
         signOutRedirectURL: "http://localhost:3000",
-        clientID: "a0Dw1Tg29HlHMrpV58bK08qvzBoa",
+        clientID: "ps1U8yNAl496Uj4F9vOSKr19t1Ua",
         baseUrl: "https://api.asgardeo.io/t/erandisaorg",
-        scope: ["openid", "profile"]
+        scope: ["openid", "profile", "urn:erandisaorg:getproductdetails:list", "urn:erandisaorg:getproductdetails:view"]
       }}
     >
       <script src="https://cdn.jsdelivr.net/npm/react/umd/react.production.min.js" crossorigin></script>
