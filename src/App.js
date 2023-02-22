@@ -2,10 +2,10 @@
 import React, { useEffect } from 'react';
 import './App.css';
 import './App.scss';
-import { Nav, Navbar, Container }  from 'react-bootstrap';
+import { Nav, Navbar, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, useHistory } from 'react-router-dom';
 import { useAuthContext } from "@asgardeo/auth-react";
 
 import Catalog from './components/Catalog/Catalog.js';
@@ -14,7 +14,23 @@ import Admin from './components/Admin/Admin.js';
 
 // Component to render the login/signup/logout menu
 const RightLoginSignupMenu = () => {
-  const { state, signIn, signOut } = useAuthContext();
+  const history = useHistory();
+
+  const { state, getDecodedIDToken, signIn, signOut } = useAuthContext();
+  useEffect(() => {
+    if (state.isAuthenticated) {
+      getDecodedIDToken().then((response) => {
+        console.log("Decoded ID Token: ", response);
+      });
+
+      // if allowedScopes has admin scope, navigate to /admin
+      if (state.allowedScopes.includes("openid")) {
+        history.push("/admin");
+      }
+    }
+  }, [state.isAuthenticated]);
+
+  console.log("state: ", state);
 
   // Based on Asgardeo SDK, set a variable like below to check and conditionally render the menu
   let isLoggedIn = state.isAuthenticated;
@@ -24,16 +40,16 @@ const RightLoginSignupMenu = () => {
 
   // Conditionally render the following two links based on whether the user is logged in or not
   if (isLoggedIn) {
-    menu =  <>
+    menu = <>
       <Nav>
-      <Nav.Link href="#deets"><button onClick={() => signOut()}>Logout</button></Nav.Link>
-      <Nav.Link href="#deets"><FontAwesomeIcon icon={faUser} /></Nav.Link></Nav>
+        <Nav.Link href="#deets"><button onClick={() => signOut()}>Logout</button></Nav.Link>
+        <Nav.Link href="#deets"><FontAwesomeIcon icon={faUser} /></Nav.Link></Nav>
     </>
   } else {
     menu = <>
       <Nav>
-      <Nav.Link href="#deets"><button onClick={() => signIn()}>Login</button></Nav.Link>
-      <Nav.Link href="#deets">Sign Up</Nav.Link></Nav>
+        <Nav.Link href="#deets"><button onClick={() => signIn()}>Login</button></Nav.Link>
+        <Nav.Link href="#deets">Sign Up</Nav.Link></Nav>
     </>
   }
   return menu;
@@ -43,20 +59,20 @@ const RightLoginSignupMenu = () => {
 const PetStoreNav = () => {
   return (
     <>
-    <Navbar bg="light" expand="lg">
-      <Container>
-        <Navbar.Brand href="#home">PetStore</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="/">Catalog</Nav.Link>
-            <Nav.Link href="/mycart">My Cart</Nav.Link>
-            <Nav.Link href="/admin">Admin</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-        <RightLoginSignupMenu />
-      </Container>
-    </Navbar>
+      <Navbar bg="light" expand="lg">
+        <Container>
+          <Navbar.Brand href="#home">PetStore</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link href="/">Catalog</Nav.Link>
+              <Nav.Link href="/mycart">My Cart</Nav.Link>
+              <Nav.Link href="/admin">Admin</Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+          <RightLoginSignupMenu />
+        </Container>
+      </Navbar>
     </>
   );
 };
@@ -66,22 +82,23 @@ const App = () => {
   useEffect(() => {
     document.title = 'PetStore';
   }, []);
+
   return (
     <>
-    <PetStoreNav />
-    <BrowserRouter>
-      <Switch>
-        <Route exact path="/">
-          <Catalog />
-        </Route>
-        <Route path="/mycart">
-          <MyCart />
-        </Route>
-        <Route path="/admin">
-          <Admin />
-        </Route>
-      </Switch>
-    </BrowserRouter>
+      <BrowserRouter>
+        <PetStoreNav />
+        <Switch>
+          <Route exact path="/">
+            <Catalog />
+          </Route>
+          <Route path="/mycart">
+            <MyCart />
+          </Route>
+          <Route path="/admin">
+            <Admin />
+          </Route>
+        </Switch>
+      </BrowserRouter>
     </>
   );
 }
